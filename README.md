@@ -6,12 +6,20 @@ https://synthio.vercel.app/
 
 ## Screenshots
 
-### Desktop View
-![Desktop View](./assets/desktop-view.png)
-
-### Mobile View
-![Mobile View](./assets/mobile-view.png)
-
+<table>
+  <tr>
+    <td>
+      <img src="./assets/desktop-view.png" alt="Desktop View" width="700"/>
+    </td>
+    <td>
+      <img src="./assets/mobile-view.png" alt="Mobile View" width="300"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">Desktop View</td>
+    <td align="center">Mobile View</td>
+  </tr>
+</table>
 
 ## Features
 
