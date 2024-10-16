@@ -4,6 +4,15 @@ A sleek, mica-inspired music visualizer built with Svelte and powered by Vite. T
 
 https://synthio.vercel.app/
 
+## Screenshots
+
+### Desktop View
+![Desktop View](./assets/desktop-view.png)
+
+### Mobile View
+![Mobile View](./assets/mobile-view.png)
+
+
 ## Features
 
 - Upload and play your audio files
