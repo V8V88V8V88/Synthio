@@ -20,7 +20,7 @@ https://synthio.vercel.app/
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/synthio.git
+   git clone https://github.com/v8v88v8v88/synthio.git
    cd synthio
    ```
 
