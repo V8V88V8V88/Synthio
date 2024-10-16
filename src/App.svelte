@@ -54,21 +54,18 @@
             analyser.getByteFrequencyData(dataArray);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Create gradient background
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, "rgba(255, 87, 34, 0.2)");
             gradient.addColorStop(1, "rgba(0, 0, 0, 0.8)");
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw visualizer bars
             const barWidth = (canvas.width / bufferLength) * 2.5;
             let x = 0;
 
             dataArray.forEach((value, i) => {
                 const barHeight = (value / 255) * canvas.height;
 
-                // Create gradient for bars
                 const barGradient = ctx.createLinearGradient(
                     0,
                     canvas.height,
@@ -91,7 +88,7 @@
 
 <main>
     <div class="content">
-        <h1>Svelte Music Visualizer</h1>
+        <h1>Synthio: A Svelete Music Visualizer</h1>
         <div class="controls">
             <label for="file-upload" class="custom-file-upload">
                 Choose File
