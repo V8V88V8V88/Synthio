@@ -20,6 +20,9 @@
         mid: 0,
         treble: 0
     };
+    let analyser;
+    let dataArray;
+    let bufferLength;
 
     onMount(() => {
         canvas = document.getElementById("visualizer");
@@ -90,7 +93,7 @@
             audio = new Audio(objectURL);
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const source = audioContext.createMediaElementSource(audio);
-            const analyser = audioContext.createAnalyser();
+            analyser = audioContext.createAnalyser();
             
             // Create equalizer nodes
             const bassFilter = audioContext.createBiquadFilter();
@@ -107,7 +110,10 @@
             trebleFilter.connect(analyser);
             analyser.connect(audioContext.destination);
             
-            visualize(analyser);
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            
+            visualize();
             
             audio.addEventListener("timeupdate", updateProgress);
             audio.addEventListener("ended", () => loadTrack(currentTrackIndex + 1));
@@ -118,13 +124,16 @@
         if (playing) audio.play();
     }
 
-    function visualize(analyser) {
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
+    function visualize() {
         function draw() {
             requestAnimationFrame(draw);
-            analyser.getByteFrequencyData(dataArray);
+
+            if (visualizationMode === "wave") {
+                analyser.getByteTimeDomainData(dataArray);
+            } else {
+                analyser.getByteFrequencyData(dataArray);
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -135,13 +144,13 @@
 
             switch (visualizationMode) {
                 case "bars":
-                    drawBars(dataArray);
+                    drawBars();
                     break;
                 case "wave":
-                    drawWave(dataArray);
+                    drawWave();
                     break;
                 case "circle":
-                    drawCircle(dataArray);
+                    drawCircle();
                     break;
             }
         }
@@ -149,12 +158,12 @@
         draw();
     }
 
-    function drawBars(dataArray) {
-        const barWidth = (canvas.width / dataArray.length) * 2.5;
+    function drawBars() {
+        const barWidth = (canvas.width / bufferLength) * 2.5;
         let x = 0;
 
-        dataArray.forEach((value) => {
-            const barHeight = (value / 255) * canvas.height;
+        for (let i = 0; i < bufferLength; i++) {
+            const barHeight = (dataArray[i] / 255) * canvas.height;
             const barGradient = ctx.createLinearGradient(
                 0,
                 canvas.height,
@@ -166,54 +175,57 @@
             ctx.fillStyle = barGradient;
             ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
             x += barWidth + 1;
-        });
+        }
     }
 
-    function drawWave(dataArray) {
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(255, 87, 34, 0.8)";
+    function drawWave() {
         ctx.lineWidth = 2;
-        
-        const sliceWidth = canvas.width / dataArray.length;
+        ctx.strokeStyle = "rgba(255, 87, 34, 0.8)";
+        ctx.beginPath();
+
+        const sliceWidth = canvas.width / bufferLength;
         let x = 0;
-        
-        ctx.moveTo(0, canvas.height / 2);
-        dataArray.forEach((value, i) => {
-            const y = (value / 255) * canvas.height;
+
+        for (let i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = v * canvas.height / 2;
+
             if (i === 0) {
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
             }
+
             x += sliceWidth;
-        });
-        
+        }
+
         ctx.lineTo(canvas.width, canvas.height / 2);
         ctx.stroke();
     }
 
-    function drawCircle(dataArray) {
+    function drawCircle() {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const radius = Math.min(centerX, centerY) * 0.8;
-        
+
         ctx.beginPath();
-        dataArray.forEach((value, i) => {
-            const angle = (i / dataArray.length) * Math.PI * 2;
-            const amplitude = (value / 255) * radius;
-            const x = centerX + Math.cos(angle) * amplitude;
-            const y = centerY + Math.sin(angle) * amplitude;
+        ctx.strokeStyle = "rgba(255, 87, 34, 0.8)";
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i < bufferLength; i++) {
+            const rads = Math.PI * 2 / bufferLength;
+            const magnitude = dataArray[i] / 255;
+            const x = centerX + Math.cos(rads * i) * (radius * magnitude);
+            const y = centerY + Math.sin(rads * i) * (radius * magnitude);
             
             if (i === 0) {
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
             }
-        });
-        
+        }
+
         ctx.closePath();
-        ctx.strokeStyle = "rgba(255, 87, 34, 0.8)";
-        ctx.lineWidth = 2;
         ctx.stroke();
     }
 </script>
@@ -324,7 +336,87 @@
 </main>
 
 <style>
-    /* Previous styles remain unchanged */
+    :global(body) {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+        overflow: hidden;
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+    }
+
+    .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .custom-file-upload,
+    button {
+        background-color: rgba(255, 87, 34, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+            background-color 0.3s,
+            transform 0.1s;
+    }
+
+    .custom-file-upload:hover,
+    button:hover {
+        background-color: rgba(255, 87, 34, 1);
+    }
+
+    .custom-file-upload:active,
+    button:active {
+        transform: scale(0.98);
+    }
+
+    button:disabled {
+        background-color: rgba(255, 87, 34, 0.3);
+        cursor: not-allowed;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .file-name {
+        font-style: italic;
+        opacity: 0.7;
+    }
+
+    canvas {
+        width: 100%;
+        height: 60vh;
+    }
 
     .audio-controls {
         display: flex;
@@ -390,7 +482,7 @@
     .playlist-item {
         padding: 0.5rem;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition:  background-color 0.2s;
         border-radius: 3px;
     }
 
