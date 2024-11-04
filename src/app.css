@@ -89,3 +89,204 @@ button:disabled {
         font-size: 2.5em;
     }
 }
+
+:global(body) {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.custom-file-upload,
+button {
+    background-color: rgba(255, 87, 34, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition:
+        background-color 0.3s,
+        transform 0.1s;
+}
+
+.custom-file-upload:hover,
+button:hover {
+    background-color: rgba(255, 87, 34, 1);
+}
+
+.custom-file-upload:active,
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background-color: rgba(255, 87, 34, 0.3);
+    cursor: not-allowed;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+canvas {
+    width: 100%;
+    height: 60vh;
+}
+
+.audio-controls {
+    display: flex;
+    gap: 2rem;
+    margin: 1rem 0;
+}
+
+.volume-control,
+.eq-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.equalizer {
+    display: flex;
+    gap: 1rem;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 1rem 0;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+
+.progress {
+    position: absolute;
+    height: 100%;
+    background: rgba(255, 87, 34, 0.8);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
+.time {
+    font-family: monospace;
+    min-width: 4ch;
+}
+
+.playlist {
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+.playlist-item {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition:  background-color 0.2s;
+    border-radius: 3px;
+}
+
+.playlist-item:hover {
+    background: rgba(255, 87, 34, 0.2);
+}
+
+.playlist-item.active {
+    background: rgba(255, 87, 34, 0.4);
+}
+
+select {
+    background: rgba(255, 87, 34, 0.8);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.5);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #ff5722;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .audio-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .equalizer {
+        justify-content: center;
+    }
+}
